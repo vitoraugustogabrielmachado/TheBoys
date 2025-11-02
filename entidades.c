@@ -46,6 +46,10 @@ heroi inicializaHerois(heroi *H, mundo *M, struct fprio_t *LEF){
     H->tempoHeroi = aleat(0, 4320);
     H->velocidade = aleat(50, 5000);
     H->baseLocal = aleat(0, M->n_bases);
+    void *item; //isso eh temporario so pra conseguir utilizar a funçao
+    int controle = fprio_insere(LEF, item, 2, H->tempoHeroi);
+    if(!controle)
+        return;
     //criar e inserir o evento chega(H.tempoHeroi, H, H.baseLocal)
 }
 

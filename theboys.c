@@ -23,7 +23,8 @@ int main (){
     if(!inicializaEntidade(M, LEF))
       return(0);
   
-
+  /*codigo da missao = 1
+  codigo do evento chega = 2*/
     // executar o laço de simulação
 
     // destruir o mundo
