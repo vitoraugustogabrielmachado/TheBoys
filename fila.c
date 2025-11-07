@@ -10,8 +10,6 @@ struct fila_t *fila_cria (){
     return(aux);
 }
 struct fila_t *fila_destroi (struct fila_t *f){
-    if(!f)
-        return(); //oq colocar aq?
     struct fila_nodo_t *atual = f->prim;
     while(atual){
         struct fila_nodo_t *aux = atual->prox;

@@ -5,6 +5,8 @@
 #include "fila.h"
 #include "fprio.h"
 
+
+
 typedef struct heroi_t{
     int id_heroi; 
     struct cjto_t *hab_pertencentes; 
@@ -14,17 +16,6 @@ typedef struct heroi_t{
     int tempoHeroi;
     int baseLocal;
 }heroi;
-
-typedef struct mundo_t{
-    int t_inicial; //fixado em 0
-    int t_final; //fixado em 525600
-    int tamanho; //fixado em 20000
-    int n_habilidades; //fixado em 10
-    int n_herois; //n_habilidades * 5
-    int n_bases; //n_herois / 5
-    int n_missoes; //t_final / 100
-    int n_compostosV; //n_habilidades * 3
-}mundo;
 
 typedef struct missao_t{
     int id_missao; //aleatorio de 0 a n_missoes - 1
@@ -41,17 +32,48 @@ typedef struct base_t{
     struct fila_t *fila_espera; //fila vazia de inicio
 }base;
 
-void inicializaMundo(mundo *M);
+struct item_t{
+    int codigoEvento;
+    int tempoEvento;
+    heroi *h;
+    base *b;
+};
 
-missao inicializaMissoes(missao *MI, mundo *M, struct fprio_t *LEF);
+typedef struct mundo_t{
+    int t_inicial; //fixado em 0
+    int t_final; //fixado em 525600
+    int tamanho; //fixado em 20000
+    int n_habilidades; //fixado em 10
+    int n_herois; //n_habilidades * 5
+    heroi **herois;
+    int n_bases; //n_herois / 5
+    base **bases;
+    int n_missoes; //t_final / 100
+    int n_compostosV; //n_habilidades * 3
+    int relogio;
+}mundo;
 
-heroi inicializaHerois(heroi *H, mundo *M, struct fprio_t *LEF);
+mundo *criaMundo();
 
-base inicializaBases(base *B, mundo *M);
+missao *criaMissoes(mundo *M, struct fprio_t *LEF, int i);
+
+heroi *criaHerois(mundo *M, struct fprio_t *LEF, int i);
+
+base *criaBases(mundo *M, int i);
+
+int aleat(int min, int max);
+
+struct item_t *criaItem(int c, int t);
 
 int inicializaEntidade(mundo *M, struct fprio_t *LEF);
 
+void destruirEntidades(mundo *M, struct fprio_t *LEF); //ver isso dps se os parametros estao corretos
 
-//talvez alterar o tempo dos eventos por referencia?
+void destruirBases(base *bases);
+
+void destruirHerois(heroi *herois);
+
+void destruirMissoes(missao *missoes);
 
 #endif
+//talvez alterar o tempo dos eventos por referencia?

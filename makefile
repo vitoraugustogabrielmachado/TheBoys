@@ -1,28 +1,40 @@
 # makefile The Boys
 # Carlos Maziero - DINF/UFPR, 2024/2
-
 CC      = gcc
 CFLAGS  = -Wall -Wextra -Werror -g -std=c99
 LDLIBS  = -lm
 MAIN    = theboys
 ENTREGA = $(MAIN)
 
-# lista de arquivos de cabeçalho (a completar)
-HDR = fila.h fprio.h conjunto.h
+# lista de arquivos de cabeçalho
+HDR = fila.h fprio.h conjunto.h eventos.h entidades.h
 
-# lista de arquivos-objeto (a completar)
-# não inclua conjunto.o, senão ele será removido com "make clean"
-OBJ = fila.o fprio.o theboys.o
+# lista de arquivos-objeto (não inclua conjunto.o)
+OBJ = fila.o fprio.o theboys.o eventos.o entidades.o
 
 # construir o executável
-$(MAIN): $(MAIN).o $(OBJ) conjunto.o
+$(MAIN): $(OBJ) conjunto.o
+	$(CC) $(CFLAGS) -o $(MAIN) $(OBJ) conjunto.o $(LDLIBS)
 
-# construir os arquivos-objeto (a completar)
-$(MAIN).o: $(MAIN).c $(HDR)
+# construir o main
+theboys.o: theboys.c $(HDR)
 
 # construir os TADs
 fila.o: fila.c fila.h
+	$(CC) $(CFLAGS) -c fila.c
+
 fprio.o: fprio.c fprio.h
+	$(CC) $(CFLAGS) -c fprio.c
+
+eventos.o: eventos.c eventos.h
+	$(CC) $(CFLAGS) -c eventos.c
+
+entidades.o: entidades.c entidades.h
+	$(CC) $(CFLAGS) -c entidades.c
+
+# compilar conjunto separadamente (pré-compilado, não limpo no clean)
+conjunto.o: conjunto.c conjunto.h
+	$(CC) $(CFLAGS) -c conjunto.c
 
 # executar
 run: $(MAIN)
@@ -32,7 +44,7 @@ run: $(MAIN)
 valgrind: $(MAIN)
 	valgrind --leak-check=full --track-origins=yes ./$(MAIN)
 
-# gerar arquivo TGZ para entregar
+# gerar arquivo TGZ para entrega
 tgz: clean
 	-mkdir -p /tmp/$(USER)/$(ENTREGA)
 	chmod 0700 /tmp/$(USER)/$(ENTREGA)
@@ -44,4 +56,3 @@ tgz: clean
 # limpar arquivos temporários
 clean:
 	rm -f *~ $(OBJ) $(MAIN) /tmp/$(USER)/$(ENTREGA) $(ENTREGA).tgz
-
