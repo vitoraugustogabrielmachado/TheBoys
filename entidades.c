@@ -22,10 +22,6 @@ struct item_t *criaItem(int c, int t){
 }
 
 void destroiItem(struct item_t *I){
-    free(I->b);
-    I->b = NULL; 
-    free(I->h);
-    I->h = NULL;
     free(I);
     I = NULL;
 }
@@ -43,6 +39,7 @@ mundo *criaMundo(){ //o tipo dele eh diferente pq ele ta no programa principal
     M->n_missoes = M->t_final / 100;
     M->n_compostosV = M->n_habilidades * 3;
     M->relogio = M->t_inicial;
+    //colocar o vetor de bases. heróis e missões aq
     return(M);
 }
 
