@@ -55,11 +55,11 @@ typedef struct mundo_t{
 
 mundo *criaMundo();
 
-missao *criaMissoes(mundo *M, struct fprio_t *LEF, int i);
+int criaMissoes(mundo *M, struct fprio_t *LEF, int i);
 
-heroi *criaHerois(mundo *M, struct fprio_t *LEF, int i);
+int criaHerois(mundo *M, struct fprio_t *LEF, int i);
 
-base *criaBases(mundo *M, int i);
+int criaBases(mundo *M, int i);
 
 int aleat(int min, int max);
 

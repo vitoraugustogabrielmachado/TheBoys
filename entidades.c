@@ -22,10 +22,15 @@ struct item_t *criaItem(int c, int t){
 }
 
 void destroiItem(struct item_t *I){
-
+    free(I->b);
+    I->b = NULL; 
+    free(I->h);
+    I->h = NULL;
+    free(I);
+    I = NULL;
 }
 
-mundo *criaMundo(){
+mundo *criaMundo(){ //o tipo dele eh diferente pq ele ta no programa principal
     mundo *M = malloc(sizeof(missao));
     if(!M)
         abort();
@@ -45,7 +50,7 @@ int aleat(int min, int max){
     return(min + rand() % (max - min + 1));
 }
 
-missao *criaMissoes(mundo *M, struct fprio_t *LEF, int i){
+int criaMissoes(mundo *M, struct fprio_t *LEF, int i){
     missao *MI = malloc(sizeof(missao)); //liberar esse maloc
     if(!MI)
         abort();
@@ -62,7 +67,7 @@ missao *criaMissoes(mundo *M, struct fprio_t *LEF, int i){
     //criar e inserir o evento missao(MI.tempoMissao, MI)
 }
 
-heroi *criaHerois(mundo *M, struct fprio_t *LEF, int i){
+int criaHerois(mundo *M, struct fprio_t *LEF, int i){
     heroi *H = malloc(sizeof(heroi)); //liberar esse maloc
     if(!H)
         abort();
@@ -86,7 +91,7 @@ heroi *criaHerois(mundo *M, struct fprio_t *LEF, int i){
     //criar e inserir o evento chega(H.tempoHeroi, H, H.baseLocal)
 }
 
-base *criaBases(mundo *M, int i){
+int criaBases(mundo *M, int i){
     base *B = malloc(sizeof(base)); //liberar esse maloc
     if(!B)
         abort();
@@ -104,23 +109,19 @@ base *criaBases(mundo *M, int i){
 int inicializaEntidade(mundo *M, struct fprio_t *LEF){
     int i;
     
-    base **bases = malloc(M->n_bases * sizeof(base*)); //tenho q liberar todos os mallocs
-    if(!bases)
-        return(-1);
     for(i = 0; i < M->n_bases; i++)
-        bases[i] = criaBases(M, i);
+        if(!criaBases(M, i))
+            return(-1);
     
-    heroi **herois = malloc(M->n_herois * sizeof(heroi*));
-    if(!herois)
-        return(-1);
+    
     for(i = 0; i < M->n_herois; i++)
-        herois[i] = criaHerois(M, LEF, i);
+        if(!criaHerois(M, LEF, i))
+            return(-1);
     
-    missao **missoes = malloc(M->n_missoes * sizeof(missao*));
-    if(!missoes)
-        return(-1);
+
     for(i = 0; i < M->n_missoes; i++)
-        missoes[i] = criaMissoes(M, LEF, i); 
+        if(!criaMissoes(M, LEF, i))
+            return(-1); 
     return(1);
     //os eventos tem q ser do tipo fpnodo_t
     //ev = lef->tipo 
@@ -129,3 +130,21 @@ int inicializaEntidade(mundo *M, struct fprio_t *LEF){
     //switch ev e executa o evento 
     //ev = lef->tipo (= lef->prox-> tipo) e assim fica em loop
 }
+
+void destruirMissoes(missao *MI){
+    MI->hab_necessarias = cjto_destroi(MI->hab_necessarias);
+    free(MI);
+    MI = NULL;
+}
+
+void destruirBases(base *B){    
+    
+}
+
+void destruirEntidades(mundo *M, missao **MI, base *B, struct fprio_t *LEF){
+    int i;
+    for(i = 0; i < M->n_missoes; i++)
+        destruirMissoes(MI);
+    for(i = 0; i < M->n_bases; i++)
+        destruirBases(B);
+} 

@@ -27,8 +27,7 @@ int main (){
         ev = LEF->prim; 
         //tenho q retirar os eventos tbm
         M->relogio = ev->prio; //ver isso 
-        switch (ev->tipo)
-        {
+        switch (ev->tipo){
         case CODIGOCHEGA: eventoChega(ev->prio, ev->item, LEF);
           /* code */
           break;
