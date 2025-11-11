@@ -22,21 +22,24 @@ int main (){
         return(0);
     if(!inicializaEntidade(M, LEF))
         return(0);
-    struct fpnodo_t *ev = LEF->prim;
+    struct fpnodo_t *ev;
+    //int a, b;
     do{
-        ev = LEF->prim; 
         //tenho q retirar os eventos tbm
+        ev = LEF->prim;
         M->relogio = ev->prio; //ver isso 
         switch (ev->tipo){
         case CODIGOCHEGA: eventoChega(ev->prio, ev->item, LEF);
           /* code */
           break;
+       
         
         default:
           break;
         }
-        
-    }while (ev->tipo == CODIGOFIM);//eh assim um do while?
+        //fprio_retira(LEF, &a, &b); //ver isso
+        LEF->prim = LEF->prim->prox;
+    }while (ev->tipo != CODIGOFIM);//eh assim um do while?
   /*codigo da missao = 1
   codigo do evento chega = 2*/
     // executar o laço de simulação

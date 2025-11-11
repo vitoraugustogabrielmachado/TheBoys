@@ -86,7 +86,7 @@ heroi *criaHerois(mundo *M, struct fprio_t *LEF, int i){
     H->paciencia = aleat(0, 100);
     H->tempoHeroi = aleat(0, 4320);
     H->velocidade = aleat(50, 5000);
-    H->baseLocal = M->BASES[aleat(0, M->n_bases - 1)]->id_base; //talvez seja isso? pq nn faz sentido ele ter base por enquanto ate ele chegar em alguma
+    H->baseLocal = -1; //talvez seja isso? pq nn faz sentido ele ter base por enquanto ate ele chegar em alguma
     struct item_t *item = criaItem(CODIGOCHEGA, H->tempoHeroi); 
     item->h = H;
 
@@ -120,14 +120,12 @@ base *criaBases(mundo *M, int i){
 //retorna 1 em caso de sucesso
 int inicializaEntidade(mundo *M, struct fprio_t *LEF){
     int i;
-    
     for(i = 0; i < M->n_bases; i++)
         M->BASES[i] = criaBases(M, i);
     
     
     for(i = 0; i < M->n_herois; i++)
         M->HEROIS[i] = criaHerois(M, LEF, i);
-    
     
     for(i = 0; i < M->n_missoes; i++)
         M->MISSOES[i] = criaMissoes(M, LEF, i);
