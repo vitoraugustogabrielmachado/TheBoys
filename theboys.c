@@ -40,7 +40,8 @@ int main (){
   /*codigo da missao = 1
   codigo do evento chega = 2*/
     // executar o laço de simulação
-
+    destruirEntidades(M);
+    LEF = fprio_destroi(LEF);
     // destruir o mundo
 
     return (0) ;

@@ -86,6 +86,7 @@ struct fprio_t *fprio_destroi (struct fprio_t *f){
   struct fpnodo_t *atual = f->prim;
   while(atual){
     struct fpnodo_t *aux = atual->prox;
+    free(atual->item);
     free(atual);
     atual = aux;
   }

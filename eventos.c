@@ -11,7 +11,7 @@ void eventoChega(int tempo, struct item_t *item, struct fprio_t *LEF){ //quando 
     if(item->b->lotacao == cjto_card(item->b->herois_presentes) && fila_tamanho(item->b->fila_espera) == 0)
         espera = 1;
     else 
-        espera = (item->h->paciencia) > (10 * fila_tamanho(item->b->fila_espera)); //isso ta certo? nn precisa de um parenteses por fora?
+        espera = ((item->h->paciencia) > (10 * fila_tamanho(item->b->fila_espera))); //isso ta certo? nn precisa de um parenteses por fora?
 
     if (espera){
         struct item_t *item = criaItem(CODIGOESPERA, tempo);
@@ -29,10 +29,3 @@ void eventoEspera(int tempo, struct item_t *item, struct fprio_t *LEF){
     fprio_insere(LEF, i, 0, i->tempoEvento);
 }
 
-void eventoDesiste(int tempo, struct item_t *item, mundo *M, struct fprio_t *LEF){
-
-}
-
-void eventoAvisa(int tempo, base b){
-    
-}

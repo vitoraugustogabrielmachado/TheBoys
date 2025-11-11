@@ -45,21 +45,22 @@ typedef struct mundo_t{
     int tamanho; //fixado em 20000
     int n_habilidades; //fixado em 10
     int n_herois; //n_habilidades * 5
-    heroi **herois;
+    heroi **HEROIS;
     int n_bases; //n_herois / 5
-    base **bases;
+    base **BASES;
     int n_missoes; //t_final / 100
+    missao **MISSOES;
     int n_compostosV; //n_habilidades * 3
     int relogio;
 }mundo;
 
 mundo *criaMundo();
 
-int criaMissoes(mundo *M, struct fprio_t *LEF, int i);
+missao *criaMissoes(mundo *M, struct fprio_t *LEF, int i);
 
-int criaHerois(mundo *M, struct fprio_t *LEF, int i);
+heroi *criaHerois(mundo *M, struct fprio_t *LEF, int i);
 
-int criaBases(mundo *M, int i);
+base *criaBases(mundo *M, int i);
 
 int aleat(int min, int max);
 
@@ -67,7 +68,7 @@ struct item_t *criaItem(int c, int t);
 
 int inicializaEntidade(mundo *M, struct fprio_t *LEF);
 
-void destruirEntidades(mundo *M, struct fprio_t *LEF); //ver isso dps se os parametros estao corretos
+void destruirEntidades(mundo *M); //ver isso dps se os parametros estao corretos
 
 void destruirBases(base *bases);
 
@@ -77,3 +78,5 @@ void destruirMissoes(missao *missoes);
 
 #endif
 //talvez alterar o tempo dos eventos por referencia?
+//problemas que eu tive: fila estava usando campos q nn tinham sido inicializados
+// e os itens nn estavam sendo destruidos dentro da funcao fprio destroi

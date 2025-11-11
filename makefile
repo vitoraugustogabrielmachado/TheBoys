@@ -32,9 +32,7 @@ eventos.o: eventos.c eventos.h
 entidades.o: entidades.c entidades.h
 	$(CC) $(CFLAGS) -c entidades.c
 
-# compilar conjunto separadamente (pré-compilado, não limpo no clean)
-conjunto.o: conjunto.c conjunto.h
-	$(CC) $(CFLAGS) -c conjunto.c
+
 
 # executar
 run: $(MAIN)

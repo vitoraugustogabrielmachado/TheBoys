@@ -5,6 +5,9 @@
 
 struct fila_t *fila_cria (){
     struct fila_t *aux = malloc(sizeof(struct fila_t));
+    aux->prim = NULL;
+    aux->fim = NULL;
+    aux->num = 0;  
     if(!aux)
         return(NULL);
     return(aux);
