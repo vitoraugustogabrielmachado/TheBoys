@@ -30,9 +30,9 @@ int main (){
         M->relogio = ev->prio; //ver isso 
         switch (ev->tipo){
         case CODIGOCHEGA: eventoChega(ev->prio, ev->item, LEF);
-          /* code */
           break;
-       
+        case CODIGOESPERA: eventoEspera(ev->prio, ev->item, LEF);
+          break;
         
         default:
           break;

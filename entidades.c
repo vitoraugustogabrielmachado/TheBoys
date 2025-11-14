@@ -18,6 +18,8 @@ struct item_t *criaItem(int c, int t){
         abort();
     item->codigoEvento = c;
     item->tempoEvento = t;
+    item->h = NULL;
+    item->b = NULL;
     return(item);
 }
 
