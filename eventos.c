@@ -1,44 +1,53 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include "eventos.h"
 #include "entidades.h"
 #include "fila.h"
 #include "fprio.h"
 #include "conjunto.h"
 
-void eventoChega(int tempo, struct item_t *item, struct fprio_t *LEF){ //quando tiver terminado ver se nn fica melhor mudar o nome das variaveis pra nn repetir mt
-    item->h->baseLocal = item->b->id_base;
+evento *criaEvento(int tipo, int tempo, heroi *h, base *b, missao *mi){
+    evento *ev = malloc(sizeof(evento));
+    if(!ev)
+        abort();
+    ev->tipo = tipo;
+    ev->tempo = tempo;
+    ev->h = h;
+    ev->b = b;
+    ev->mi = mi;
+    return(ev);
+}
+
+void eventoChega(int tempo, evento *ev, struct fprio_t *LEF){ //quando tiver terminado ver se nn fica melhor mudar o nome das variaveis pra nn repetir mt
+    ev->h->baseLocal = ev->b->id_base;
     int espera;
 
 
-    if(item->b->lotacao == cjto_card(item->b->herois_presentes) && fila_tamanho(item->b->fila_espera) == 0)
+    if(ev->b->lotacao == cjto_card(ev->b->herois_presentes) && fila_tamanho(ev->b->fila_espera) == 0)
         espera = 1;
     else 
-        espera = ((item->h->paciencia) > (10 * fila_tamanho(item->b->fila_espera))); //isso ta certo? nn precisa de um parenteses por fora?
+        espera = ((ev->h->paciencia) > (10 * fila_tamanho(ev->b->fila_espera))); //isso ta certo? nn precisa de um parenteses por fora?
 
     if (espera){
-        struct item_t *item2 = criaItem(CODIGOESPERA, tempo);
-        printf("%6d: CHEGA HEROI %2d BASE %d (%2d/%2d) ESPERA\n", tempo, item->h->id_heroi, item->b->id_base, cjto_card(item->b->herois_presentes), item->b->lotacao);
-        item2->h = item->h;
-        item2->b = item->b;
-        fprio_insere(LEF, item2, item2->codigoEvento, item2->tempoEvento);
+        printf("%6d: CHEGA HEROI %2d BASE %d (%2d/%2d) ESPERA\n", tempo, ev->h->id_heroi, ev->b->id_base, cjto_card(ev->b->herois_presentes), ev->b->lotacao);
+        ev->tipo = CODIGOESPERA;
+        fprio_insere(LEF, ev, ev->tipo, ev->tempo);
     }else{
-        struct item_t *item2 = criaItem(CODIGODESISTE, tempo); //sera q isso nn ocupa o dobro de espaço na memoria?
-        printf("%6d: CHEGA HEROI %2d BASE %d (%2d/%2d) DESISTE\n", tempo, item->h->id_heroi, item->b->id_base, cjto_card(item->b->herois_presentes), item->b->lotacao);
-        item2->h = item->h;
-        item2->b = item->b;
-        fprio_insere(LEF, item2, item2->codigoEvento, item2->tempoEvento);
+        printf("%6d: CHEGA HEROI %2d BASE %d (%2d/%2d) DESISTE\n", tempo, ev->h->id_heroi, ev->b->id_base, cjto_card(ev->b->herois_presentes), ev->b->lotacao);
+        ev->tipo = CODIGODESISTE;
+        fprio_insere(LEF, ev, ev->tipo, ev->tempo);
     }
     
 }
 
-void eventoEspera(int tempo, struct item_t *item, struct fprio_t *LEF){
+void eventoEspera(evento *ev, struct fprio_t *LEF){
  
-    fila_insere(item->b->fila_espera, item->h->id_heroi); // talvez int tam = isso sirva pra algo dp
+    fila_insere(ev->b->fila_espera, ev->h->id_heroi); // talvez int tam = isso sirva pra algo dp
  
     
-    struct item_t *i = criaItem(CODIGOAVISA, tempo);
+    ev->tipo = CODIGOAVISA;
 
-    fprio_insere(LEF, i, i->codigoEvento, i->tempoEvento);
+    fprio_insere(LEF, ev, ev->tipo, ev->tempo);
 
 }
 

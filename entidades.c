@@ -11,23 +11,6 @@
 #define TAMANHOMAX 20000
 
 
-
-struct item_t *criaItem(int c, int t){
-    struct item_t *item = malloc(sizeof(struct item_t));
-    if(!item)
-        abort();
-    item->codigoEvento = c;
-    item->tempoEvento = t;
-    item->h = NULL;
-    item->b = NULL;
-    return(item);
-}
-
-void destroiItem(struct item_t *I){
-    free(I);
-    I = NULL;
-}
-
 mundo *criaMundo(){ //o tipo dele eh diferente pq ele ta no programa principal
     mundo *M = malloc(sizeof(mundo));
     if(!M)
@@ -70,9 +53,8 @@ missao *criaMissoes(mundo *M, struct fprio_t *LEF, int i){
     MI->local[2] = aleat(0 ,M->tamanho - 1);
     MI->hab_necessarias = cjto_aleat(aleat(6, 10), M->n_habilidades);
     MI->tempoMissao = aleat(0, M->t_final);
-    struct item_t *item = criaItem(CODIGOMISSAO, MI->tempoMissao); 
-    int controle = fprio_insere(LEF, item, item->codigoEvento, item->tempoEvento);
-    if(controle == -1)
+    evento *ev = criaEvento(CODIGOMISSAO, MI->tempoMissao, NULL, NULL, MI);
+    if(fprio_insere(LEF, ev, ev->tipo, ev->tempo) == -1)
         abort();
     return(MI);
     //criar e inserir o evento missao(MI.tempoMissao, MI)
@@ -89,17 +71,16 @@ heroi *criaHerois(mundo *M, struct fprio_t *LEF, int i){
     H->tempoHeroi = aleat(0, 4320);
     H->velocidade = aleat(50, 5000);
     H->baseLocal = -1; //talvez seja isso? pq nn faz sentido ele ter base por enquanto ate ele chegar em alguma
-    struct item_t *item = criaItem(CODIGOCHEGA, H->tempoHeroi); 
-    item->h = H;
-
     base *destino = M->BASES[aleat(0, M->n_bases - 1)];
-    item->b = destino; //perguntar se precisa disso explicar que
+
+    evento *ev = criaEvento(CODIGOCHEGA, H->tempoHeroi, H, destino, NULL);
+     //perguntar se precisa disso explicar que
     //essa ideia veio do fato do evento desiste/otro precisa q o heroi va para outra base
     //mas agora que eu fiz o vetor de bases e herois no mundo, nao daria pra resolver o problema
     //do evento com o mundo?
     //liberar isso, como todos os eventos vao ter itens com eles 
-    int controle = fprio_insere(LEF, item, item->codigoEvento, item->tempoEvento); //o define nn devia passar para ca?
-    if(controle == -1)
+     //o define nn devia passar para ca?
+    if(fprio_insere(LEF, ev, ev->tipo, ev->tempo) == -1)
         abort();
     return(H);
     //criar e inserir o evento chega(H.tempoHeroi, H, H.baseLocal)
