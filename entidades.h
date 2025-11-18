@@ -14,7 +14,7 @@ typedef struct heroi_t{
     int paciencia; 
     int velocidade; 
     int tempoHeroi;
-    int baseLocal;
+    int status;
 }heroi;
 
 typedef struct missao_t{
@@ -31,13 +31,6 @@ typedef struct base_t{
     struct cjto_t *herois_presentes; //de inicio tem q estar vazio
     struct fila_t *fila_espera; //fila vazia de inicio
 }base;
-
-struct item_t{
-    int codigoEvento;
-    int tempoEvento;
-    heroi *h;
-    base *b;
-};
 
 typedef struct mundo_t{
     int t_inicial; //fixado em 0

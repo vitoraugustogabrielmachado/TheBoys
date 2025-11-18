@@ -79,7 +79,9 @@ void *fprio_retira (struct fprio_t *f, int *tipo, int *prio){
   *tipo = aux->tipo;
   *prio = aux->prio;
   f->num--;
-  return(aux->item);
+  void *item = aux->item; // salva antes de liberar
+  free(aux);
+  return (item);
 }
 
 struct fprio_t *fprio_destroi (struct fprio_t *f){

@@ -49,8 +49,8 @@ missao *criaMissoes(mundo *M, struct fprio_t *LEF, int i){
     if(!MI)
         abort();
     MI->id_missao = i; 
-    MI->local[1] = aleat(0, M->tamanho - 1);
-    MI->local[2] = aleat(0 ,M->tamanho - 1);
+    MI->local[0] = aleat(0, M->tamanho - 1);
+    MI->local[1] = aleat(0 ,M->tamanho - 1);
     MI->hab_necessarias = cjto_aleat(aleat(6, 10), M->n_habilidades);
     MI->tempoMissao = aleat(0, M->t_final);
     evento *ev = criaEvento(CODIGOMISSAO, MI->tempoMissao, NULL, NULL, MI);
@@ -70,7 +70,7 @@ heroi *criaHerois(mundo *M, struct fprio_t *LEF, int i){
     H->paciencia = aleat(0, 100);
     H->tempoHeroi = aleat(0, 4320);
     H->velocidade = aleat(50, 5000);
-    H->baseLocal = -1; //talvez seja isso? pq nn faz sentido ele ter base por enquanto ate ele chegar em alguma
+    //talvez seja isso? pq nn faz sentido ele ter base por enquanto ate ele chegar em alguma
     base *destino = M->BASES[aleat(0, M->n_bases - 1)];
 
     evento *ev = criaEvento(CODIGOCHEGA, H->tempoHeroi, H, destino, NULL);
@@ -91,8 +91,8 @@ base *criaBases(mundo *M, int i){
     if(!B)
         abort();
     B->id_base = i;
+    B->local[0] = aleat(0, M->tamanho - 1);
     B->local[1] = aleat(0, M->tamanho - 1);
-    B->local[2] = aleat(0, M->tamanho - 1);
     B->lotacao = aleat(3, 10);
     B->herois_presentes = cjto_cria(B->lotacao);
     B->fila_espera = fila_cria();

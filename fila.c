@@ -48,6 +48,7 @@ int fila_retira (struct fila_t *f, int *item){
     *item = aux->item;
     free(aux);
     aux = NULL;
+    f->num--;
     return(1);
         
 }

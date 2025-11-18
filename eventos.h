@@ -25,24 +25,24 @@ typedef struct eventos_t{
 
 evento *criaEvento(int tipo, int tempo, heroi *h, base *b, missao *mi);
 
-void eventoChega(int tempo, evento *ev, struct fprio_t *LEF);
+void eventoChega(evento *ev, struct fprio_t *LEF);
 
-void eventoMissao();
+void eventoMissao(evento *ev, struct fprio_t *LEF);
 
 void eventoEspera(evento *ev, struct fprio_t *LEF);
 
-void eventoDesiste();
+void eventoDesiste(evento *ev, mundo *M, struct fprio_t *LEF);
 
-void eventoAvisa();
+void eventoAvisa(evento *ev, mundo *M, struct fprio_t *LEF);
 
-void eventoEntra();
+void eventoEntra(evento *ev, struct fprio_t *LEF);
 
-void eventoSai();
+void eventoSai(evento *ev, struct fprio_t *LEF);
 
-void eventoViaja();
+void eventoViaja(evento *ev, struct fprio_t *LEF);
 
-void eventoMorre();
+void eventoMorre(evento *ev, struct fprio_t *LEF);
 
-void eventoFim();
+void eventoFim(evento *ev, struct fprio_t *LEF);
 
 #endif

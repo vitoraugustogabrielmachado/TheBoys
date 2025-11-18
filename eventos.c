@@ -18,8 +18,7 @@ evento *criaEvento(int tipo, int tempo, heroi *h, base *b, missao *mi){
     return(ev);
 }
 
-void eventoChega(int tempo, evento *ev, struct fprio_t *LEF){ //quando tiver terminado ver se nn fica melhor mudar o nome das variaveis pra nn repetir mt
-    ev->h->baseLocal = ev->b->id_base;
+void eventoChega(evento *ev, struct fprio_t *LEF){ //quando tiver terminado ver se nn fica melhor mudar o nome das variaveis pra nn repetir mt
     int espera;
 
 
@@ -29,25 +28,48 @@ void eventoChega(int tempo, evento *ev, struct fprio_t *LEF){ //quando tiver ter
         espera = ((ev->h->paciencia) > (10 * fila_tamanho(ev->b->fila_espera))); //isso ta certo? nn precisa de um parenteses por fora?
 
     if (espera){
-        printf("%6d: CHEGA HEROI %2d BASE %d (%2d/%2d) ESPERA\n", tempo, ev->h->id_heroi, ev->b->id_base, cjto_card(ev->b->herois_presentes), ev->b->lotacao);
-        ev->tipo = CODIGOESPERA;
-        fprio_insere(LEF, ev, ev->tipo, ev->tempo);
+        printf("%6d: CHEGA HEROI %2d BASE %d (%2d/%2d) ESPERA\n", ev->tempo, ev->h->id_heroi, ev->b->id_base, cjto_card(ev->b->herois_presentes), ev->b->lotacao);
+        evento *novoEv = criaEvento(CODIGOESPERA, ev->tempo, ev->h, ev->b, ev->mi);
+        fprio_insere(LEF, novoEv, novoEv->tipo, novoEv->tempo);
     }else{
-        printf("%6d: CHEGA HEROI %2d BASE %d (%2d/%2d) DESISTE\n", tempo, ev->h->id_heroi, ev->b->id_base, cjto_card(ev->b->herois_presentes), ev->b->lotacao);
-        ev->tipo = CODIGODESISTE;
-        fprio_insere(LEF, ev, ev->tipo, ev->tempo);
+        printf("%6d: CHEGA HEROI %2d BASE %d (%2d/%2d) DESISTE\n", ev->tempo, ev->h->id_heroi, ev->b->id_base, cjto_card(ev->b->herois_presentes), ev->b->lotacao);
+        evento *novoEv = criaEvento(CODIGODESISTE, ev->tempo, ev->h, ev->b, ev->mi);
+        fprio_insere(LEF, novoEv, novoEv->tipo, novoEv->tempo);
     }
     
 }
 
 void eventoEspera(evento *ev, struct fprio_t *LEF){
- 
+    printf("%6d: ESPERA HEROI %2d BASE %d (%2d)\n", ev->tempo, ev->h->id_heroi, ev->b->id_base, fila_tamanho(ev->b->fila_espera));
     fila_insere(ev->b->fila_espera, ev->h->id_heroi); // talvez int tam = isso sirva pra algo dp
- 
-    
-    ev->tipo = CODIGOAVISA;
-
-    fprio_insere(LEF, ev, ev->tipo, ev->tempo);
-
+    evento *novoEv = criaEvento(CODIGOAVISA, ev->tempo, ev->h, ev->b, ev->mi);
+    fprio_insere(LEF, novoEv, novoEv->tipo, novoEv->tempo);
 }
 
+void eventoDesiste(evento *ev, mundo *M, struct fprio_t *LEF){
+    base *destino;
+    do{
+    destino = M->BASES[aleat(0, M->n_bases - 1)];
+    }while(destino->id_base != ev->b->id_base);
+    ev->b = destino;
+
+    printf("%6d: DESISTE HEROI %2d BASE %d\n", ev->tempo, ev->h->id_heroi, ev->b->id_base);
+
+    evento *novoEv = criaEvento(CODIGOVIAJA, ev->tempo, ev->h, ev->b, ev->mi);
+    fprio_insere(LEF, novoEv, novoEv->tipo, novoEv->tempo);
+}
+
+void eventoAvisa(evento *ev, mundo *M, struct fprio_t *LEF){
+    int idHeroiRetirado;
+    printf("%6d: AVISA PORTEIRO BASE %d (%2d/%2d)\n", ev->tempo, ev->b->id_base, cjto_card(ev->b->herois_presentes), ev->b->lotacao);
+    while((ev->b->lotacao - cjto_card(ev->b->herois_presentes) != 0) && fila_tamanho(ev->b->fila_espera) > 0){
+        fila_retira(ev->b->fila_espera, &idHeroiRetirado);
+        heroi *h = M->HEROIS[idHeroiRetirado];
+        cjto_insere(ev->b->herois_presentes, h->id_heroi);
+
+        printf("%6d: AVISA PORTEIRO BASE %d ADMITE %2d\n", ev->tempo, ev->b->id_base, ev->h->id_heroi);
+
+        evento *novoEv = criaEvento(CODIGOENTRA, ev->tempo, h, ev->b, ev->mi);
+        fprio_insere(LEF, novoEv, novoEv->tipo, novoEv->tempo);
+    }
+}

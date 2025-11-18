@@ -24,30 +24,28 @@ int main (){
         return(0);
     evento *ev;
     int a, b;
-    do{
-        //tenho q retirar os eventos tbm
-        ev = fprio_retira(LEF, &a, &b);
-       
-        if(!ev)
-          break;
-        M->relogio = ev->tempo; //ver isso 
-        switch (ev->tipo){
-        case CODIGOCHEGA: eventoChega(ev->tempo, ev, LEF);
-          break;
-        case CODIGOESPERA: eventoEspera(ev, LEF);
-          break;
-        
-        default:
-          break;
-        }
+    while ((ev = fprio_retira(LEF, &a, &b)) != NULL){
+        M->relogio = ev->tempo;
+        switch(ev->tipo){
+            case CODIGOCHEGA:
+                eventoChega(ev, LEF);
+                break;
 
-    }while (ev && ev->tipo != CODIGOFIM);//eh assim um do while?
-  /*codigo da missao = 1
-  codigo do evento chega = 2*/
-    // executar o laço de simulação
+            case CODIGOESPERA:
+                eventoEspera(ev, LEF);
+                break;
+            
+            case CODIGODESISTE:
+                eventoDesiste(ev, M, LEF);
+                break;
+              
+            case CODIGOAVISA:
+                eventoAvisa(ev, M, LEF);
+        }
+        free(ev);
+}
     destruirEntidades(M);
     LEF = fprio_destroi(LEF);
-    // destruir o mundo
 
     return (0) ;
 }
