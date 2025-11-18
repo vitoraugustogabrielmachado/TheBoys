@@ -61,7 +61,11 @@ void eventoDesiste(evento *ev, mundo *M, struct fprio_t *LEF){
 
 void eventoAvisa(evento *ev, mundo *M, struct fprio_t *LEF){
     int idHeroiRetirado;
-    printf("%6d: AVISA PORTEIRO BASE %d (%2d/%2d)\n", ev->tempo, ev->b->id_base, cjto_card(ev->b->herois_presentes), ev->b->lotacao);
+    printf("%6d: AVISA PORTEIRO BASE %d (%2d/%2d) FILA ", ev->tempo, ev->b->id_base, cjto_card(ev->b->herois_presentes), ev->b->lotacao);
+    printf("[ ");
+    if(ev->b->fila_espera && fila_tamanho(ev->b->fila_espera))
+        fila_imprime(ev->b->fila_espera);
+    printf(" ]\n");
     while((ev->b->lotacao - cjto_card(ev->b->herois_presentes) != 0) && fila_tamanho(ev->b->fila_espera) > 0){
         fila_retira(ev->b->fila_espera, &idHeroiRetirado);
         heroi *h = M->HEROIS[idHeroiRetirado];
@@ -72,4 +76,31 @@ void eventoAvisa(evento *ev, mundo *M, struct fprio_t *LEF){
         evento *novoEv = criaEvento(CODIGOENTRA, ev->tempo, h, ev->b, ev->mi);
         fprio_insere(LEF, novoEv, novoEv->tipo, novoEv->tempo);
     }
+}
+
+void eventoEntra(evento *ev, struct fprio_t *LEF){
+    int TPB = 15 + ev->h->paciencia * aleat(1, 20); 
+    evento *novoEv = criaEvento(CODIGOSAI, ev->tempo + TPB, ev->h, ev->b, ev->mi);
+
+    printf("%6d: ENTRA HEROI %2d BASE %2d (%2d/%2d) SAI %6d\n", ev->tempo, ev->h->id_heroi, ev->b->id_base, cjto_card(ev->b->herois_presentes), ev->b->lotacao, novoEv->tempo);
+
+    fprio_insere(LEF, novoEv, novoEv->tipo, novoEv->tempo);
+}
+
+void eventoSai(evento *ev, mundo *M, struct fprio_t *LEF){
+    if(cjto_retira(ev->b->herois_presentes, ev->h->id_heroi) == -1)
+        abort();
+    base *destino;
+    do{
+    destino = M->BASES[aleat(0, M->n_bases - 1)];
+    }while(destino->id_base != ev->b->id_base);
+    ev->b = destino;
+
+    printf("%6d: SAI HEROI %2d BASE %2d (%2d/%2d)\n", ev->tempo, ev->h->id_heroi, ev->b->id_base, cjto_card(ev->b->herois_presentes), ev->b->lotacao);
+
+    evento *novoEv = criaEvento(CODIGOVIAJA, ev->tempo, ev->h, ev->b, ev->mi);
+    fprio_insere(LEF, novoEv, novoEv->tipo, novoEv->tempo);
+
+    novoEv->tipo = CODIGOAVISA;
+    fprio_insere(LEF, novoEv, novoEv->tipo, novoEv->tempo);
 }

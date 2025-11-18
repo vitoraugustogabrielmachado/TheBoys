@@ -57,4 +57,11 @@ int fila_tamanho (struct fila_t *f){
         return(-1);
     return(f->num);
 }
-void fila_imprime (struct fila_t *f);
+void fila_imprime (struct fila_t *f){
+    struct fila_nodo_t *aux = f->prim;
+    for(int i = 1; i < f->num; i++){
+        printf("%d ", aux->item);
+        aux = aux->prox;
+    }
+    printf("%d", aux->item);
+}

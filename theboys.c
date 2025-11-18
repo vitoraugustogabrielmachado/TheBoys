@@ -41,6 +41,11 @@ int main (){
               
             case CODIGOAVISA:
                 eventoAvisa(ev, M, LEF);
+                break;
+
+            case CODIGOENTRA:
+                eventoEntra(ev, LEF);
+                break;
         }
         free(ev);
 }

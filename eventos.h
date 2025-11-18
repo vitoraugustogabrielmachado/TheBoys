@@ -37,7 +37,7 @@ void eventoAvisa(evento *ev, mundo *M, struct fprio_t *LEF);
 
 void eventoEntra(evento *ev, struct fprio_t *LEF);
 
-void eventoSai(evento *ev, struct fprio_t *LEF);
+void eventoSai(evento *ev, mundo *M, struct fprio_t *LEF);
 
 void eventoViaja(evento *ev, struct fprio_t *LEF);
 

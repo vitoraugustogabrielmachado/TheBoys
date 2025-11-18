@@ -70,6 +70,7 @@ heroi *criaHerois(mundo *M, struct fprio_t *LEF, int i){
     H->paciencia = aleat(0, 100);
     H->tempoHeroi = aleat(0, 4320);
     H->velocidade = aleat(50, 5000);
+    H->status = 1;
     //talvez seja isso? pq nn faz sentido ele ter base por enquanto ate ele chegar em alguma
     base *destino = M->BASES[aleat(0, M->n_bases - 1)];
 
