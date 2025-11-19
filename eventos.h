@@ -27,11 +27,11 @@ evento *criaEvento(int tipo, int tempo, heroi *h, base *b, missao *mi);
 
 void eventoChega(evento *ev, struct fprio_t *LEF);
 
-void eventoMissao(evento *ev, struct fprio_t *LEF);
+void eventoMissao(evento *ev, mundo *M, struct fprio_t *LEF);
 
 void eventoEspera(evento *ev, struct fprio_t *LEF);
 
-void eventoDesiste(evento *ev, mundo *M, struct fprio_t *LEF);
+void eventoDesiste(evento *ev, struct fprio_t *LEF);
 
 void eventoAvisa(evento *ev, mundo *M, struct fprio_t *LEF);
 

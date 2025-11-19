@@ -7,7 +7,7 @@
 #include "entidades.h"
 #include "eventos.h"
 
-#define TEMPOMAX 525600
+#define TEMPOMAX 52560
 #define TAMANHOMAX 20000
 
 

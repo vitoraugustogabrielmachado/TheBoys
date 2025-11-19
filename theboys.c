@@ -24,7 +24,7 @@ int main (){
         return(0);
     evento *ev;
     int a, b;
-    while (((ev = fprio_retira(LEF, &a, &b)) != NULL) && (ev->tempo < M->t_final)){
+    while (((ev = fprio_retira(LEF, &a, &b)) != NULL) && (M->relogio < M->t_final)){
         M->relogio = ev->tempo;
         switch(ev->tipo){
             case CODIGOCHEGA:
@@ -36,7 +36,7 @@ int main (){
                 break;
             
             case CODIGODESISTE:
-                eventoDesiste(ev, M, LEF);
+                eventoDesiste(ev, LEF);
                 break;
               
             case CODIGOAVISA:
@@ -54,9 +54,14 @@ int main (){
             case CODIGOVIAJA:
                 eventoViaja(ev, M, LEF);
                 break;
+
+            case CODIGOMORRE:   
+                eventoMorre(ev, LEF);
+                break;
         }
         free(ev);
 }
+    free(ev);
     destruirEntidades(M);
     LEF = fprio_destroi(LEF);
 
