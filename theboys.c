@@ -17,14 +17,14 @@
 // programa principal
 int main (){
     mundo *M = criaMundo();
-    struct fprio_t *LEF = fprio_cria(); //destruir isso 
+    struct fprio_t *LEF = fprio_cria(); 
     if(!LEF)
         return(0);
     if(!inicializaEntidade(M, LEF))
         return(0);
     evento *ev;
     int a, b;
-    while ((ev = fprio_retira(LEF, &a, &b)) != NULL){
+    while (((ev = fprio_retira(LEF, &a, &b)) != NULL) && (ev->tempo < M->t_final)){
         M->relogio = ev->tempo;
         switch(ev->tipo){
             case CODIGOCHEGA:
@@ -45,6 +45,14 @@ int main (){
 
             case CODIGOENTRA:
                 eventoEntra(ev, LEF);
+                break;
+
+            case CODIGOSAI:
+                eventoSai(ev, LEF);
+                break;
+
+            case CODIGOVIAJA:
+                eventoViaja(ev, M, LEF);
                 break;
         }
         free(ev);

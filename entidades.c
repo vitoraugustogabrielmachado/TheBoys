@@ -73,14 +73,7 @@ heroi *criaHerois(mundo *M, struct fprio_t *LEF, int i){
     H->status = 1;
     //talvez seja isso? pq nn faz sentido ele ter base por enquanto ate ele chegar em alguma
     base *destino = M->BASES[aleat(0, M->n_bases - 1)];
-
     evento *ev = criaEvento(CODIGOCHEGA, H->tempoHeroi, H, destino, NULL);
-     //perguntar se precisa disso explicar que
-    //essa ideia veio do fato do evento desiste/otro precisa q o heroi va para outra base
-    //mas agora que eu fiz o vetor de bases e herois no mundo, nao daria pra resolver o problema
-    //do evento com o mundo?
-    //liberar isso, como todos os eventos vao ter itens com eles 
-     //o define nn devia passar para ca?
     if(fprio_insere(LEF, ev, ev->tipo, ev->tempo) == -1)
         abort();
     return(H);
@@ -95,7 +88,7 @@ base *criaBases(mundo *M, int i){
     B->local[0] = aleat(0, M->tamanho - 1);
     B->local[1] = aleat(0, M->tamanho - 1);
     B->lotacao = aleat(3, 10);
-    B->herois_presentes = cjto_cria(B->lotacao);
+    B->herois_presentes = cjto_cria(M->n_herois);
     B->fila_espera = fila_cria();
     return(B);
 }

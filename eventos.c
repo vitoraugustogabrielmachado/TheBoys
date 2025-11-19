@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 #include "eventos.h"
 #include "entidades.h"
 #include "fila.h"
@@ -66,12 +67,13 @@ void eventoAvisa(evento *ev, mundo *M, struct fprio_t *LEF){
     if(ev->b->fila_espera && fila_tamanho(ev->b->fila_espera))
         fila_imprime(ev->b->fila_espera);
     printf(" ]\n");
+
     while((ev->b->lotacao - cjto_card(ev->b->herois_presentes) != 0) && fila_tamanho(ev->b->fila_espera) > 0){
         fila_retira(ev->b->fila_espera, &idHeroiRetirado);
         heroi *h = M->HEROIS[idHeroiRetirado];
         cjto_insere(ev->b->herois_presentes, h->id_heroi);
 
-        printf("%6d: AVISA PORTEIRO BASE %d ADMITE %2d\n", ev->tempo, ev->b->id_base, ev->h->id_heroi);
+        printf("%6d: AVISA PORTEIRO BASE %d ADMITE %2d\n", ev->tempo, ev->b->id_base, h->id_heroi);
 
         evento *novoEv = criaEvento(CODIGOENTRA, ev->tempo, h, ev->b, ev->mi);
         fprio_insere(LEF, novoEv, novoEv->tipo, novoEv->tempo);
@@ -82,25 +84,32 @@ void eventoEntra(evento *ev, struct fprio_t *LEF){
     int TPB = 15 + ev->h->paciencia * aleat(1, 20); 
     evento *novoEv = criaEvento(CODIGOSAI, ev->tempo + TPB, ev->h, ev->b, ev->mi);
 
-    printf("%6d: ENTRA HEROI %2d BASE %2d (%2d/%2d) SAI %6d\n", ev->tempo, ev->h->id_heroi, ev->b->id_base, cjto_card(ev->b->herois_presentes), ev->b->lotacao, novoEv->tempo);
+    printf("%6d: ENTRA HEROI %2d BASE %d (%2d/%2d) SAI %6d\n", ev->tempo, ev->h->id_heroi, ev->b->id_base, cjto_card(ev->b->herois_presentes), ev->b->lotacao, novoEv->tempo);
 
     fprio_insere(LEF, novoEv, novoEv->tipo, novoEv->tempo);
 }
 
-void eventoSai(evento *ev, mundo *M, struct fprio_t *LEF){
+void eventoSai(evento *ev, struct fprio_t *LEF){
     if(cjto_retira(ev->b->herois_presentes, ev->h->id_heroi) == -1)
         abort();
-    base *destino;
-    do{
-    destino = M->BASES[aleat(0, M->n_bases - 1)];
-    }while(destino->id_base != ev->b->id_base);
-    ev->b = destino;
 
     printf("%6d: SAI HEROI %2d BASE %2d (%2d/%2d)\n", ev->tempo, ev->h->id_heroi, ev->b->id_base, cjto_card(ev->b->herois_presentes), ev->b->lotacao);
 
     evento *novoEv = criaEvento(CODIGOVIAJA, ev->tempo, ev->h, ev->b, ev->mi);
     fprio_insere(LEF, novoEv, novoEv->tipo, novoEv->tempo);
 
-    novoEv->tipo = CODIGOAVISA;
+    evento *novoEv2 = criaEvento(CODIGOAVISA, ev->tempo, ev->h, ev->b, ev->mi);
+    fprio_insere(LEF, novoEv2, novoEv2->tipo, novoEv2->tempo);
+}
+
+void eventoViaja(evento *ev, mundo *M, struct fprio_t *LEF){
+    base *destino;
+    destino = M->BASES[aleat(0, M->n_bases - 1)];
+    
+    int distancia_1 = sqrt((ev->b->local[1] - destino->local[1])^2);
+    int distancia_2 = sqrt((ev->b->local[2] - destino->local[2])^2);
+    int duracao = (distancia_1 + distancia_2)/ ev->h->velocidade;
+
+    evento *novoEv = criaEvento(CODIGOCHEGA, ev->tempo + duracao, ev->h, ev->b, ev->mi);
     fprio_insere(LEF, novoEv, novoEv->tipo, novoEv->tempo);
 }
