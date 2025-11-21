@@ -9,6 +9,7 @@
 
 typedef struct heroi_t{
     int id_heroi; 
+    int id_baseAtual;
     struct cjto_t *hab_pertencentes; 
     int experiencia; 
     int paciencia; 
@@ -22,6 +23,7 @@ typedef struct missao_t{
     int local[2]; //aleatorio de 0 a tamanho - 1
     struct cjto_t *hab_necessarias; //de 6 a 10 de forma aleatoria
     int tempoMissao;//precisa colocar o tempo na struct?
+    int tentativas;
 }missao;
 
 typedef struct base_t{

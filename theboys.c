@@ -58,6 +58,10 @@ int main (){
             case CODIGOMORRE:   
                 eventoMorre(ev, LEF);
                 break;
+
+            case CODIGOMISSAO:
+                eventoMissao(ev, M, LEF);
+                break;
         }
         free(ev);
 }

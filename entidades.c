@@ -7,7 +7,7 @@
 #include "entidades.h"
 #include "eventos.h"
 
-#define TEMPOMAX 52560
+#define TEMPOMAX 525600
 #define TAMANHOMAX 20000
 
 
@@ -49,6 +49,7 @@ missao *criaMissoes(mundo *M, struct fprio_t *LEF, int i){
     if(!MI)
         abort();
     MI->id_missao = i; 
+    MI->tentativas = 1;
     MI->local[0] = aleat(0, M->tamanho - 1);
     MI->local[1] = aleat(0 ,M->tamanho - 1);
     MI->hab_necessarias = cjto_aleat(aleat(6, 10), M->n_habilidades);
@@ -65,6 +66,7 @@ heroi *criaHerois(mundo *M, struct fprio_t *LEF, int i){
     if(!H)
         abort();
     H->id_heroi = i;
+    H->id_baseAtual = -1;
     H->hab_pertencentes = cjto_aleat(aleat(1, 3), M->n_habilidades);
     H->experiencia = 0;
     H->paciencia = aleat(0, 100);

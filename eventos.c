@@ -19,10 +19,16 @@ evento *criaEvento(int tipo, int tempo, heroi *h, base *b, missao *mi){
     return(ev);
 }
 
+int dist(int a[], int b[]){
+    int distancia_1 = (a[0] - b[0]) * (a[0] - b[0]);
+    int distancia_2 = (a[1] - b[1]) * (a[1] - b[1]);
+    return(sqrt(distancia_1 + distancia_2));
+}
+
 void eventoChega(evento *ev, struct fprio_t *LEF){ //quando tiver terminado ver se nn fica melhor mudar o nome das variaveis pra nn repetir mt
     int espera;
-
     if(ev->h->status){
+        ev->h->id_baseAtual = ev->b->id_base;
         if(ev->b->lotacao == cjto_card(ev->b->herois_presentes) && fila_tamanho(ev->b->fila_espera) == 0)
             espera = 1;
         else 
@@ -106,10 +112,7 @@ void eventoViaja(evento *ev, mundo *M, struct fprio_t *LEF){
     if(ev->h->status){
         base *destino;
         destino = M->BASES[aleat(0, M->n_bases - 1)];
-        
-        int distancia_1 = (ev->b->local[0] - destino->local[0]) * (ev->b->local[0] - destino->local[0]);
-        int distancia_2 = (ev->b->local[1] - destino->local[1]) * (ev->b->local[1] - destino->local[1]);
-        int distanciaTotal = sqrt(distancia_1 + distancia_2);
+        int distanciaTotal = dist(ev->b->local, destino->local);
         int duracao = distanciaTotal/ ev->h->velocidade;
 
         evento *novoEv = criaEvento(CODIGOCHEGA, ev->tempo + duracao, ev->h, destino, ev->mi);
@@ -120,33 +123,106 @@ void eventoViaja(evento *ev, mundo *M, struct fprio_t *LEF){
 }
 
 void eventoMorre(evento *ev, struct fprio_t *LEF){
-    if(!cjto_retira(ev->b->herois_presentes, ev->h->id_heroi))
+    if(cjto_retira(ev->b->herois_presentes, ev->h->id_heroi) == -1)
         abort();
     ev->h->status = 0;
+
+    printf("%6d: MORRE HEROI %d MISSAO %d\n", ev->tempo, ev->h->id_heroi, ev->mi->id_missao);
 
     evento *novoEv = criaEvento(CODIGOAVISA, ev->tempo, ev->h, ev->b, ev->mi);
     fprio_insere(LEF, novoEv, novoEv->tipo, novoEv->tempo);
 }
 
-int dist(evento *ev, base *b){
-    int distancia_1 = (b->local[0] - ev->mi->local[0]) * (b->local[0] - ev->mi->local[0]);
-    int distancia_2 = (b->local[1] - ev->mi->local[1]) * (b->local[1] - ev->mi->local[1]);
-    return(sqrt(distancia_1 + distancia_2));
-}
-
-
-
 void eventoMissao(evento *ev, mundo *M, struct fprio_t *LEF){
-    int i, menor = __INT_MAX__, distBaseMissao[M->n_bases];
-    interseccao = cjto_cria();
+    int i, cont, apto = 0, maiorEXP, salvaIdBase , menor, distBaseMissao[M->n_bases];
+    struct cjto_t *resultadoUniao = cjto_cria(M->n_herois);
+
+    printf("%6d: MISSAO %d TENT %d HAB REQ:[ ", ev->tempo, ev->mi->id_missao, ev->mi->tentativas);
+    cjto_imprime(ev->mi->hab_necessarias);
+    printf("]\n");
+
     for(i = 0; i < M->n_bases; i++){
-        distBaseMissao[i] = dist(ev, M->BASES[i]);
+        distBaseMissao[i] = dist(ev->mi->local, M->BASES[i]->local);
     } //coloca no vetor todas as distancias possiveis
-    for(i = 0; i < M->n_bases; i++){
-        if(menor > distBaseMissao[i]){
-            cjto_inter(M->BASES[i]->herois_presentes, ev->mi->hab_necessarias);
+
+    for(cont = 0; cont < M->n_bases; cont++){
+        menor = __INT_MAX__;
+        salvaIdBase = -1;
+        apto = 0;
+        for(i = 0; i < M->n_bases; i++){
+            if(distBaseMissao[i] < menor){
+                menor = distBaseMissao[i];
+                salvaIdBase = i;
+            }
+            if(salvaIdBase == -1)
+                break;
+            
+            
+            // percorre todos os heróis da base salvaIdBase
+            for(int h = 0; h < M->n_herois; h++){
+                if(cjto_pertence(M->BASES[salvaIdBase]->herois_presentes, h)){
+                    // une as habilidades do herói
+                    struct cjto_t *tmp = cjto_uniao(resultadoUniao, M->HEROIS[h]->hab_pertencentes);
+                    cjto_destroi(resultadoUniao);
+                    resultadoUniao = tmp;
+                }
+            }
+
+            if(cjto_contem(resultadoUniao, ev->mi->hab_necessarias)){
+                apto = 1;
+                break;
+            }
+            if(apto == 1)
+                break;
+            distBaseMissao[salvaIdBase] = __INT_MAX__;
+        
         }
     }
+    
+    if(apto == 1){
+        printf("%6d: MISSAO %d BASE %d DIST %d HEROIS[", ev->tempo, ev->mi->id_missao, M->BASES[salvaIdBase]->id_base, distBaseMissao[salvaIdBase]);
+        cjto_imprime(M->BASES[salvaIdBase]->herois_presentes);
+        printf("]\n");
+        for(i = 0; i < M->n_herois; i++){
+            if(cjto_pertence(M->BASES[salvaIdBase]->herois_presentes, i)){
+                M->HEROIS[i]->experiencia++;
+                printf("%6d: MISSAO %d HAB HEROI %d[", ev->tempo, ev->mi->id_missao, M->HEROIS[i]->id_heroi);
+                cjto_imprime(M->HEROIS[i]->hab_pertencentes);
+                printf("]\n");
+            }
+        }
+        printf("%6d: MISSAO %d CUMPRIDA BASE %d HABS:[", ev->tempo, ev->mi->id_missao, M->BASES[salvaIdBase]->id_base);
+        cjto_imprime(resultadoUniao);
+        printf("]\n");
+    }
+    else if(M->n_compostosV > 0 && ev->tempo % 2500 == 0){
+        maiorEXP = M->HEROIS[0]->experiencia;
+        int indiceMaiorEXP = 0;
+        M->n_compostosV--;
+        for(i = 0; i < M->n_herois; i++){
+            if(M->HEROIS[i]->experiencia > maiorEXP && M->HEROIS[i]->status == 1){ //testa se o heroi ja nn esta morto
+                maiorEXP = M->HEROIS[i]->experiencia;
+                indiceMaiorEXP = i;
+            }
+        }
+        evento *novoEv = criaEvento(CODIGOMORRE, ev->tempo, M->HEROIS[indiceMaiorEXP], M->BASES[M->HEROIS[indiceMaiorEXP]->id_baseAtual], ev->mi);
+        fprio_insere(LEF, novoEv, novoEv->tipo, novoEv->tempo);
+
+        printf("%6d: MISSAO %d CUMPRIDA HEROI %d USOU COMPOSTO V\n", ev->tempo, ev->mi->id_missao, novoEv->h->id_heroi);            
+
+        salvaIdBase = M->HEROIS[indiceMaiorEXP]->id_baseAtual;
+        for(cont = 0; cont < M->n_herois; cont++){
+            if(cjto_pertence(M->BASES[salvaIdBase]->herois_presentes, cont))
+                M->HEROIS[cont]->experiencia++;
+        }
+    }
+    else{
+        ev->mi->tentativas++;
+        printf("%6d: MISSAO %d IMPOSSIVEL\n", ev->tempo, ev->mi->id_missao);
+        evento *novoEv = criaEvento(CODIGOMISSAO, ev->tempo + 24*60, ev->h, ev->b, ev->mi);
+        fprio_insere(LEF, novoEv, novoEv->tipo, novoEv->tempo);
+    }
+    cjto_destroi(resultadoUniao);
 
 }
 
