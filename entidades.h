@@ -32,6 +32,8 @@ typedef struct base_t{
     int lotacao; //aleatorio de 3 a 10 
     struct cjto_t *herois_presentes; //de inicio tem q estar vazio
     struct fila_t *fila_espera; //fila vazia de inicio
+    int fila_max;
+    int quantidadeMissoes;
 }base;
 
 typedef struct mundo_t{

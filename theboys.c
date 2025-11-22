@@ -13,6 +13,26 @@
 // seus #defines vão aqui
 
 // minimize o uso de variáveis globais
+void imprimir_estatisticas(mundo *M){
+    int i, taxaMissao = 0;
+    for(i = 0; i < M->n_herois; i++){
+        if(M->HEROIS[i]->status){
+            printf("HEROI %d VIVO PAC %d VEL %d EXP %d HABS [", M->HEROIS[i]->id_heroi, M->HEROIS[i]->paciencia, M->HEROIS[i]->velocidade, M->HEROIS[i]->experiencia);
+            cjto_imprime(M->HEROIS[i]->hab_pertencentes);
+            printf("]\n");
+        }
+        else{
+            printf("HEROI %d MORTO PAC %d VEL %d EXP %d HABS [", M->HEROIS[i]->id_heroi, M->HEROIS[i]->paciencia, M->HEROIS[i]->velocidade, M->HEROIS[i]->experiencia);
+            cjto_imprime(M->HEROIS[i]->hab_pertencentes);
+            printf("]\n");
+        }
+    }
+    for(i = 0; i < M->n_bases; i++){
+        printf("BASE %d LOT %d FILA MAX %d MISSOES %d\n", M->BASES[i]->id_base, M->BASES[i]->lotacao, M->BASES[i]->fila_max, M->BASES[i]->quantidadeMissoes);
+        taxaMissao += M->BASES[i]->quantidadeMissoes;
+    }
+    printf("TAXA DE CONCLUSÃO DE MISSÕES: %d", taxaMissao/M->n_missoes);
+}
 
 // programa principal
 int main (){
@@ -23,7 +43,7 @@ int main (){
     if(!inicializaEntidade(M, LEF))
         return(0);
     evento *ev;
-    int a, b;
+    int a, b, eventosTratados = 0; //ver um jeito de tirar esse a b
     while (((ev = fprio_retira(LEF, &a, &b)) != NULL) && (M->relogio < M->t_final)){
         M->relogio = ev->tempo;
         switch(ev->tipo){
@@ -64,7 +84,10 @@ int main (){
                 break;
         }
         free(ev);
+        eventosTratados++;
 }
+    imprimir_estatisticas(M);
+    printf("EVENTOS TRATADOS: %d\n", eventosTratados);
     free(ev);
     destruirEntidades(M);
     LEF = fprio_destroi(LEF);

@@ -7,7 +7,7 @@
 #include "entidades.h"
 #include "eventos.h"
 
-#define TEMPOMAX 525600
+#define TEMPOMAX 52560
 #define TAMANHOMAX 20000
 
 
@@ -92,6 +92,8 @@ base *criaBases(mundo *M, int i){
     B->lotacao = aleat(3, 10);
     B->herois_presentes = cjto_cria(M->n_herois);
     B->fila_espera = fila_cria();
+    B->fila_max = 0;
+    B->quantidadeMissoes = 0;
     return(B);
 }
 
