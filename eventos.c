@@ -178,7 +178,7 @@ void eventoMissao(evento *ev, mundo *M, struct fprio_t *LEF){
             apto = 1;
             break;
         }
-        
+        //destruir o conjunto aq, pq caso apto seja 0 ele nn usa mais conjunto
         distBaseMissao[salvaIdBase] = __INT_MAX__;
     }
     if(apto == 1){
