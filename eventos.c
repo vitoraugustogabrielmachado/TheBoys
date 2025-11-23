@@ -181,7 +181,12 @@ void eventoMissao(evento *ev, mundo *M, struct fprio_t *LEF){
         }
         if(BMP)
             break;
+<<<<<<< HEAD
         /* marcar essa base como "não considerada" e seguir */
+=======
+        }
+        //destruir o conjunto aq, pq caso apto seja 0 ele nn usa mais conjunto
+>>>>>>> dc270e3d4380de8a75ce5bce441ae0f0a46870a0
         distBaseMissao[salvaIdBase] = __INT_MAX__;
     }
 
