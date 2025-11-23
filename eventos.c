@@ -137,8 +137,7 @@ void eventoMorre(evento *ev, struct fprio_t *LEF){
 
 
 void eventoMissao(evento *ev, mundo *M, struct fprio_t *LEF){
-    int i, cont, apto = 0, maiorEXP, salvaIdBase , menor;
-    struct cjto_t *resultadoUniao = cjto_cria(M->n_habilidades);;
+    int i, cont, BMP, maiorEXP, encontrado = 0, salvaIdBase, menor;
     int *distBaseMissao = malloc(M->n_bases * sizeof(int));
     if(!distBaseMissao)
         abort();
@@ -153,8 +152,6 @@ void eventoMissao(evento *ev, mundo *M, struct fprio_t *LEF){
     for(cont = 0; cont < M->n_bases; cont++){
         menor = __INT_MAX__;
         salvaIdBase = -1;
-        apto = 0;
-
 
         for(i = 0; i < M->n_bases; i++){
             if(distBaseMissao[i] < menor){
@@ -167,34 +164,28 @@ void eventoMissao(evento *ev, mundo *M, struct fprio_t *LEF){
             break;
         }
         
-        /* percorre todos os heróis da base salvaIdBase */
-        for(int h = 0; h < M->n_herois; h++){
-            if(cjto_pertence(M->BASES[salvaIdBase]->herois_presentes, h) == 1){
-                /* tentativa de unir resultadoUniao com as hab do heroi */
-                struct cjto_t *tmp = cjto_uniao(resultadoUniao, M->HEROIS[h]->hab_pertencentes);
-
-                cjto_destroi(resultadoUniao);
-                
-                resultadoUniao = tmp;
+        BMP = 1;
+        for(int habNecessaria = 0; habNecessaria < M->n_habilidades; habNecessaria++){
+            if(cjto_pertence(ev->mi->hab_necessarias, habNecessaria)){
+                encontrado = 0;
+                for(int h = 0; h < M->n_herois; h++){
+                    if(cjto_pertence(M->BASES[salvaIdBase]->herois_presentes, h))
+                        if(cjto_pertence(M->HEROIS[h]->hab_pertencentes, habNecessaria))
+                            encontrado = 1;
+                }
+                if(!encontrado){
+                    BMP = 0;
+                    break;
+                }
             }
         }
-
-        if(resultadoUniao && cjto_contem(resultadoUniao, ev->mi->hab_necessarias)){
-            apto = 1;
+        if(BMP)
             break;
-        }
-
-        /* Se não serviu, destruímos apenas se resultadoUniao não for NULL.
-           (Se cjto_uniao devolveu um ponteiro interno de outro objeto o tmp != original
-            já evitou a dupla destruição anteriormente.) */
-        if(resultadoUniao){
-            resultadoUniao = cjto_destroi(resultadoUniao);
-            
-        }
+        /* marcar essa base como "não considerada" e seguir */
         distBaseMissao[salvaIdBase] = __INT_MAX__;
     }
 
-    if(apto == 1){
+    if(BMP == 1){
         printf("%6d: MISSAO %d BASE %d DIST %d HEROIS[", ev->tempo, ev->mi->id_missao, M->BASES[salvaIdBase]->id_base, distBaseMissao[salvaIdBase]);
         cjto_imprime(M->BASES[salvaIdBase]->herois_presentes);
         printf("]\n");
@@ -208,7 +199,7 @@ void eventoMissao(evento *ev, mundo *M, struct fprio_t *LEF){
         }
         M->BASES[salvaIdBase]->quantidadeMissoes++;
         printf("%6d: MISSAO %d CUMPRIDA BASE %d HABS:[", ev->tempo, ev->mi->id_missao, M->BASES[salvaIdBase]->id_base);
-        cjto_imprime(resultadoUniao);
+        cjto_imprime(ev->mi->hab_necessarias);
         printf("]\n");
     }
     else if(M->n_compostosV > 0 && ev->tempo % 2500 == 0){
@@ -240,8 +231,6 @@ void eventoMissao(evento *ev, mundo *M, struct fprio_t *LEF){
         evento *novoEv = criaEvento(CODIGOMISSAO, ev->tempo + 24*60, ev->h, ev->b, ev->mi);
         fprio_insere(LEF, novoEv, novoEv->tipo, novoEv->tempo);
     }
-       
-    cjto_destroi(resultadoUniao);
        
         
         /* se pertenceOutro == 1, não destruímos (evita double-free) */

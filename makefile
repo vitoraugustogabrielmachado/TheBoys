@@ -7,10 +7,10 @@ MAIN    = theboys
 ENTREGA = $(MAIN)
 
 # lista de arquivos de cabeçalho
-HDR = fila.h fprio.h conjunto.h eventos.h entidades.h
+HDR = fila.h fprio.h conjunto.h eventos.h entidades.h simulacao.h
 
 # lista de arquivos-objeto (não inclua conjunto.o)
-OBJ = fila.o fprio.o theboys.o eventos.o entidades.o
+OBJ = fila.o fprio.o theboys.o eventos.o entidades.o simulacao.o
 
 # construir o executável
 $(MAIN): $(OBJ) conjunto.o
@@ -32,7 +32,8 @@ eventos.o: eventos.c eventos.h
 entidades.o: entidades.c entidades.h
 	$(CC) $(CFLAGS) -c entidades.c
 
-
+simulacao.o: simulacao.c simulacao.h
+	$(CC) $(CFLAGS) -c simulacao.c
 
 # executar
 run: $(MAIN)
