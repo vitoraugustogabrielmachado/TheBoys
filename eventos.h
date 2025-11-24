@@ -13,7 +13,6 @@
 #define CODIGOSAI 7
 #define CODIGOVIAJA 8
 #define CODIGOMORRE 9
-#define CODIGOFIM 10
 
 typedef struct eventos_t{
     int tempo;
@@ -23,6 +22,7 @@ typedef struct eventos_t{
     missao *mi;
 }evento;
 
+//cria eventos para adicionar na LEF, caso o evento nn use um dos campos esse campo recebe NULL
 evento *criaEvento(int tipo, int tempo, heroi *h, base *b, missao *mi);
 
 void eventoChega(evento *ev, struct fprio_t *LEF);
@@ -43,6 +43,5 @@ void eventoViaja(evento *ev, mundo *M, struct fprio_t *LEF);
 
 void eventoMorre(evento *ev, struct fprio_t *LEF);
 
-void eventoFim(evento *ev, struct fprio_t *LEF);
 
 #endif

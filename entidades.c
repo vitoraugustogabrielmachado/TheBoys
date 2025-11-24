@@ -7,11 +7,11 @@
 #include "entidades.h"
 #include "eventos.h"
 
-#define TEMPOMAX 52560
+#define TEMPOMAX 525600
 #define TAMANHOMAX 20000
 
 
-mundo *criaMundo(){ //o tipo dele eh diferente pq ele ta no programa principal
+mundo *criaMundo(){ 
     mundo *M = malloc(sizeof(mundo));
     if(!M)
         abort();
@@ -24,8 +24,8 @@ mundo *criaMundo(){ //o tipo dele eh diferente pq ele ta no programa principal
     M->n_missoes = M->t_final / 100;
     M->n_compostosV = M->n_habilidades * 3;
     M->relogio = M->t_inicial;
-    //colocar o vetor de bases. heróis e missões aq
-    base **BASES = malloc(M->n_bases * sizeof(base*));
+
+    base **BASES = malloc(M->n_bases * sizeof(base*)); 
     if (!BASES)
         abort();
     missao **MISSOES = malloc(M->n_missoes * sizeof(missao*));
@@ -45,61 +45,58 @@ int aleat(int min, int max){
 }
 
 missao *criaMissoes(mundo *M, struct fprio_t *LEF, int i){
-    missao *MI = malloc(sizeof(missao)); //liberar esse maloc
+    missao *MI = malloc(sizeof(missao)); 
     if(!MI)
         abort();
-    MI->id_missao = i; 
+    MI->id_missao = i; //o indice do vetor é igual ao id da missao
     MI->tentativas = 1;
     MI->local[0] = aleat(0, M->tamanho - 1);
     MI->local[1] = aleat(0 ,M->tamanho - 1);
     MI->hab_necessarias = cjto_aleat(aleat(6, 10), M->n_habilidades);
     MI->tempoMissao = aleat(0, M->t_final);
+
     evento *ev = criaEvento(CODIGOMISSAO, MI->tempoMissao, NULL, NULL, MI);
     if(fprio_insere(LEF, ev, ev->tipo, ev->tempo) == -1)
         abort();
     return(MI);
-    //criar e inserir o evento missao(MI.tempoMissao, MI)
 }
 
 heroi *criaHerois(mundo *M, struct fprio_t *LEF, int i){
-    heroi *H = malloc(sizeof(heroi)); //liberar esse maloc
+    heroi *H = malloc(sizeof(heroi)); 
     if(!H)
         abort();
-    H->id_heroi = i;
-    H->id_baseAtual = -1;
+    H->id_heroi = i; //o indice do vetor é igual ao id do heroi
+    H->id_baseAtual = -1; //começa no -1 pq ele nn tem base ainda
     H->hab_pertencentes = cjto_aleat(aleat(1, 3), M->n_habilidades);
     H->experiencia = 0;
     H->paciencia = aleat(0, 100);
     H->tempoHeroi = aleat(0, 4320);
     H->velocidade = aleat(50, 5000);
     H->status = 1;
-    //talvez seja isso? pq nn faz sentido ele ter base por enquanto ate ele chegar em alguma
-    base *destino = M->BASES[aleat(0, M->n_bases - 1)];
+
+    base *destino = M->BASES[aleat(0, M->n_bases - 1)]; //determina uma base aleatoria
     evento *ev = criaEvento(CODIGOCHEGA, H->tempoHeroi, H, destino, NULL);
     if(fprio_insere(LEF, ev, ev->tipo, ev->tempo) == -1)
         abort();
     return(H);
-    //criar e inserir o evento chega(H.tempoHeroi, H, H.baseLocal)
 }
 
 base *criaBases(mundo *M, int i){
-    base *B = malloc(sizeof(base)); //liberar esse maloc
+    base *B = malloc(sizeof(base)); 
     if(!B)
         abort();
-    B->id_base = i;
+    B->id_base = i; //o indice do vetor é igual ao id da base
     B->local[0] = aleat(0, M->tamanho - 1);
     B->local[1] = aleat(0, M->tamanho - 1);
     B->lotacao = aleat(3, 10);
     B->herois_presentes = cjto_cria(M->n_herois);
     B->fila_espera = fila_cria();
-    B->fila_max = 0;
+    B->fila_max = 0; //esse e o de baixo so servem para as estatisticas finais
     B->quantidadeMissoes = 0;
     return(B);
 }
 
-//retorna -1 se falhou, talvez mudar o tipo de retorno
-//retorna 1 em caso de sucesso
-int inicializaEntidade(mundo *M, struct fprio_t *LEF){
+void inicializaEntidade(mundo *M, struct fprio_t *LEF){
     int i;
     for(i = 0; i < M->n_bases; i++)
         M->BASES[i] = criaBases(M, i);
@@ -110,17 +107,9 @@ int inicializaEntidade(mundo *M, struct fprio_t *LEF){
     
     for(i = 0; i < M->n_missoes; i++)
         M->MISSOES[i] = criaMissoes(M, LEF, i);
-
-    return(1);
-    //os eventos tem q ser do tipo fpnodo_t
-    //ev = lef->tipo 
-    //tempo = lef->prio
-    //lef = lef->prox
-    //switch ev e executa o evento 
-    //ev = lef->tipo (= lef->prox-> tipo) e assim fica em loop
 }
 
-void destruirMissoes(missao *MI){
+void destruirMissoes(missao *MI){ 
     MI->hab_necessarias = cjto_destroi(MI->hab_necessarias);
     free(MI);
     MI = NULL;
@@ -161,4 +150,3 @@ void destruirEntidades(mundo *M){
     free(M);
     M = NULL;
 } 
-//destruir as coisas primeiro, depois pensar nos eventos

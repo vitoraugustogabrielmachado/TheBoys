@@ -21,11 +21,9 @@ int main (){
     struct fprio_t *LEF = fprio_cria();  
     if(!LEF)
         return(0);
-    if(!inicializaEntidade(M, LEF))
-        return(0);
+    inicializaEntidade(M, LEF);
     simulacao(M, LEF);
     destruirEntidades(M);
     LEF = fprio_destroi(LEF);
-
     return (0) ;
 }

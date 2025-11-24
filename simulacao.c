@@ -10,6 +10,9 @@
 void imprimir_estatisticas(mundo *M){
     int i;
     float porcentual, taxaMissao = 0.0;
+    printf("**************************************************************************\n");
+    printf("                     ESTATISTICAS DO FIM DO MUNDO\n");
+    printf("**************************************************************************\n\n");
     for(i = 0; i < M->n_herois; i++){
         if(M->HEROIS[i]->status){
             printf("HEROI %d VIVO PAC %d VEL %d EXP %d HABS [", M->HEROIS[i]->id_heroi, M->HEROIS[i]->paciencia, M->HEROIS[i]->velocidade, M->HEROIS[i]->experiencia);
@@ -22,10 +25,12 @@ void imprimir_estatisticas(mundo *M){
             printf("]\n");
         }
     }
+    printf("\n");
     for(i = 0; i < M->n_bases; i++){
         printf("BASE %d LOT %d FILA MAX %d MISSOES %d\n", M->BASES[i]->id_base, M->BASES[i]->lotacao, M->BASES[i]->fila_max, M->BASES[i]->quantidadeMissoes);
         taxaMissao += M->BASES[i]->quantidadeMissoes;
     }
+    printf("\n");
     porcentual = (taxaMissao/M->n_missoes) * 100;
     printf("TAXA DE CONCLUSÃO DE MISSÕES: %.0f/%d (%.1f%%)\n", taxaMissao, M->n_missoes, porcentual);
 
@@ -96,7 +101,7 @@ void simulacao(mundo *M, struct fprio_t *LEF){
         free(ev);
         eventosTratados++;
 }
-    printf("%6d: FIM DO MUNDO\n", M->relogio);
+    printf("%6d: FIM DO MUNDO\n\n", M->relogio);
     imprimir_estatisticas(M);
     printf("EVENTOS TRATADOS: %d\n", eventosTratados);
     free(ev);

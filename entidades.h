@@ -63,7 +63,7 @@ int aleat(int min, int max);
 
 struct item_t *criaItem(int c, int t);
 
-int inicializaEntidade(mundo *M, struct fprio_t *LEF);
+void inicializaEntidade(mundo *M, struct fprio_t *LEF);
 
 void destruirEntidades(mundo *M); //ver isso dps se os parametros estao corretos
 
